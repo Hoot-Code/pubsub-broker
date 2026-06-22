@@ -1,0 +1,38 @@
+services:
+  broker:
+    build: .
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - broker-data:/data
+    environment:
+      BROKER_DATA_DIR: /data
+    healthcheck:
+      test: ["CMD", "brokectl", "health", "--addr", "127.0.0.1:9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # Optional standalone HTTP/WebSocket gateway. Disabled by
+  # default — uncomment to run the gateway as its own process, connecting
+  # to the "broker" service above over the binary protocol.
+  #
+  # Alternative: instead of running this separate container, set
+  # "gateway": {"enabled": true, "addr": ":8080"} in configs/broker.json and
+  # EXPOSE/publish port 8080 on the broker service itself to run the gateway
+  # embedded in the main broker process (see README.md "HTTP Gateway").
+  #
+  # gateway:
+  #   build: .
+  #   entrypoint: ["/usr/local/bin/gateway"]
+  #   command: ["-broker-addr", "broker:9000", "-addr", ":8080"]
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     broker:
+  #       condition: service_healthy
+
+volumes:
+  broker-data:

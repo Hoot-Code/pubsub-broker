@@ -1,0 +1,14 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: broker-pdb
+  namespace: pubsub-system
+  labels:
+    app.kubernetes.io/name: pubsub
+    app.kubernetes.io/component: broker
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pubsub
+      app.kubernetes.io/component: broker

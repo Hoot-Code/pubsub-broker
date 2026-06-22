@@ -1,0 +1,51 @@
+---
+# Headless Service for stable DNS names used by cluster members.
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker
+  namespace: pubsub-system
+  labels:
+    app.kubernetes.io/name: pubsub
+    app.kubernetes.io/component: broker
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: pubsub
+    app.kubernetes.io/component: broker
+  ports:
+    - name: client
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+    - name: admin
+      port: 9001
+      targetPort: 9001
+      protocol: TCP
+    - name: cluster
+      port: 9002
+      targetPort: 9002
+      protocol: TCP
+---
+# ClusterIP Service for client traffic and admin/metrics.
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker-client
+  namespace: pubsub-system
+  labels:
+    app.kubernetes.io/name: pubsub
+    app.kubernetes.io/component: broker
+spec:
+  selector:
+    app.kubernetes.io/name: pubsub
+    app.kubernetes.io/component: broker
+  ports:
+    - name: client
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+    - name: admin
+      port: 9001
+      targetPort: 9001
+      protocol: TCP

@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: broker-config
+  namespace: pubsub-system
+  labels:
+    app.kubernetes.io/name: pubsub
+    app.kubernetes.io/component: broker
+data:
+  broker.json: |
+    {
+      "broker": {
+        "node_id": ""
+      },
+      "network": {
+        "host": "0.0.0.0",
+        "port": 9000,
+        "max_connections": 10000,
+        "read_timeout":  30000000000,
+        "write_timeout": 30000000000,
+        "idle_timeout":  300000000000
+      },
+      "replication": {
+        "factor": 3,
+        "sync_interval": 100000000,
+        "ack_timeout":   5000000000
+      },
+      "storage": {
+        "wal_path":            "/data/wal",
+        "data_path":           "/data/segments",
+        "segment_max_bytes":   1073741824,
+        "index_interval_bytes": 4096,
+        "sync_policy":         "interval"
+      },
+      "retention": {
+        "max_age_hours": 168,
+        "max_size_mb":   102400
+      },
+      "auth": {
+        "enabled": false,
+        "api_keys": []
+      },
+      "rate_limit": {
+        "enabled":          false,
+        "per_client_rps":   10000,
+        "per_topic_rps":    50000,
+        "burst_multiplier": 2
+      },
+      "logging": {
+        "level":  "info",
+        "format": "json"
+      },
+      "cluster": {
+        "enabled":               true,
+        "bind_addr":             "0.0.0.0:9002",
+        "heartbeat_interval_ms": 150,
+        "election_timeout_min_ms": 450,
+        "election_timeout_max_ms": 750,
+        "quorum_timeout_ms":      5000
+      },
+      "drain_timeout_ms": 5000
+    }
