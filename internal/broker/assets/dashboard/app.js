@@ -13,13 +13,13 @@ async function initSession() {
   try {
     const res = await fetch('/dashboard/session');
     if (res.status === 401) {
-      window.location.href = '/dashboard';
+      window.location.replace('/dashboard?expired=1');
       return;
     }
     if (!res.ok) throw new Error('session ' + res.status);
     app.session = await res.json();
   } catch {
-    window.location.href = '/dashboard';
+    window.location.replace('/dashboard?expired=1');
     return;
   }
   renderTopBar();
@@ -112,8 +112,7 @@ async function apiFetch(url, opts) {
   try {
     const res = await fetch(url, opts);
     if (res.status === 401) {
-      // The login form is served at /dashboard (not /dashboard/login).
-      window.location.href = '/dashboard';
+      window.location.replace('/dashboard?expired=1');
       return null;
     }
     return res;
@@ -206,9 +205,17 @@ async function main() {
   if (!app.session) return;
 
   renderNav();
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await fetch('/dashboard/logout', { method: 'POST' });
-    window.location.href = '/dashboard';
+  document.getElementById('logoutBtn').addEventListener('click', async function() {
+    this.disabled = true;
+    this.textContent = 'Signing out…';
+    try {
+      await fetch('/dashboard/logout', { method: 'POST' });
+    } catch {
+      // Proceed with redirect even if the request fails.
+    }
+    app.session = null;
+    try { localStorage.removeItem('pubsub_remember_key'); } catch {}
+    window.location.replace('/dashboard?logged_out=1');
   });
 
   // Import section modules

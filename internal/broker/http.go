@@ -35,7 +35,7 @@ func (b *Broker) buildHTTPServer(cfg *config.Config) *http.Server {
 	mux.HandleFunc("/healthz/drain", b.httpHealthDrain)
 	// Dashboard auth endpoints — they ARE the auth mechanism.
 	// /dashboard/session is always registered so the frontend can check auth state.
-	if cfg.Network.DashboardEnabled && cfg.Auth.Enabled {
+	if cfg.Network.DashboardEnabled {
 		mux.HandleFunc("POST /dashboard/login", b.httpDashboardLogin)
 		mux.HandleFunc("POST /dashboard/logout", b.httpDashboardLogout)
 		mux.HandleFunc("/dashboard/login", b.httpDashboardLogin)
@@ -145,6 +145,8 @@ func (b *Broker) buildHTTPServer(cfg *config.Config) *http.Server {
 // When auth is disabled or the session is valid, index.html is served.
 func (b *Broker) httpDashboardWithAuth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
 	if b.dashboardAuthEnabled() {
 		// Check whether the request carries a live session cookie. If not,
 		// or if the session has expired, show the login form so the user

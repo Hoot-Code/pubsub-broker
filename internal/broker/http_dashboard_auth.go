@@ -93,6 +93,8 @@ func (b *Broker) httpDashboardLogout(w http.ResponseWriter, r *http.Request) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   r.TLS != nil,
 		MaxAge:   -1,
 	}
 	http.SetCookie(w, clearCookie)

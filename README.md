@@ -65,6 +65,11 @@ chmod +x quickstart.sh && ./quickstart.sh
 
 This builds the broker and brokectl, creates a sample topic, and publishes 5 messages. Press Ctrl-C to stop the broker.
 
+The quickstart includes an interactive authentication wizard that lets you:
+- **Automatic** — generate a secure API key automatically (recommended)
+- **Manual** — enter your own API key (min 32 characters)
+- **Disable** — skip authentication for development only
+
 ## Quickstart (Go SDK)
 
 ```go
@@ -216,9 +221,15 @@ The broker includes an embedded Operational Control Center accessible at `GET /d
 - **Cluster** — node cards, leader/follower visualization, Raft internals (term, commit index, peer match/next index), ISR state table
 - **Metrics** — time-range charts (5m/15m/1h/24h) for publish/consume rate, connections, memory, CPU, WAL throughput, consumer lag
 - **Audit Logs** — last 100 events with client-side search/filter by client, type, or topic
-- **Settings** — read-only display of effective configuration
+- **Settings** — read-only display of effective configuration (editing support planned for a future phase)
 
 The dashboard requires authentication when `auth.enabled` is true (configurable via `network.dashboard_auth_enabled`). RBAC gating is enforced client-side for UX; all security is enforced server-side.
+
+**Authentication flow:**
+- Unauthenticated users see the login page at `/dashboard`
+- Session cookies are `HttpOnly`, `SameSite=Strict`, and expire after 12 hours (configurable via `network.dashboard_session_ttl`)
+- Logout clears the session server-side and the cookie client-side
+- Expired sessions automatically redirect to the login page
 
 ![Dashboard](docs/dashboard-screenshot.png)
 
